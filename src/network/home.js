@@ -1,7 +1,17 @@
-import {request} from "./request.js";
+import {request,request2} from "./request.js";
 
 export function getHomeMultidata(){
   return request({
     url:"/home/multidata",
+  })
+}
+
+export function getHomeGoodData(type,page){
+  return request2({
+    url:"/home/data",
+    params:{
+      type,
+      page,
+    }
   })
 }
