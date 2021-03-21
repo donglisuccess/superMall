@@ -6,8 +6,7 @@
     <scroll-view 
     class="content" 
     ref="scroll" 
-    @scrollposition="scrollposition" 
-    @pullingup="pullingup">
+    @scrollposition="scrollposition" @pullingUp="imgload">
         <carousel-figure :imglist="banner" :pointCount ="imgCount">
         <carousel-item 
         v-for="(item,index) in banner" 
@@ -18,7 +17,9 @@
       </carousel-figure>
       <recommend :recommendInfo="recommend"></recommend>
       <feature-view></feature-view>
-      <tab-control :tabText="['流行','新款','精选']" class="setPlace" @togglegood="toggle"></tab-control>
+      <tab-control :tabText="['流行','新款','精选']" 
+      class="setPlace" 
+      @togglegood="toggle" ref="tabcontrol"></tab-control>
       <goods-list :goodlist="goods[currentgoods]"></goods-list>
     </scroll-view>
     <back-top class="back-top" 
@@ -73,10 +74,6 @@ export default {
     /**
      * 这里是方法 
     */
-   pullingup(){
-     this.getHomeGoodData(this.currentgoods);
-     this.$refs.scroll.bs.finishPullUp();
-   },
    scrollposition(position){
      this.isShowTable = (-1*position.y) > 800;
    },
@@ -91,6 +88,9 @@ export default {
     //  console.log("hhhh");
     // console.log(this.$refs.scroll.message);
     this.$refs.scroll.scrollTo(0,0,500);
+   },
+   imgload(){
+     this.getHomeGoodData(this.currentgoods);
    },
     roundImg(){
       setInterval(()=>{
@@ -119,7 +119,20 @@ export default {
         // console.log(res.data.data.list);
         this.goods[type].list.push(...res.data.data.list)
         this.goods[type].page += 1;
+        this.$refs.scroll.finishPullUp();
       })
+      // console.log(this.$refs);  这里不能写在这里，因为当刚加载的时候就执行
+      // this.$refs为{}
+    },
+    // 防抖动函数
+    debound(func,delay){
+      let timer = null;
+      return function(){
+        if(timer) clearTimeout(timer);
+        timer = setTimeout(()=>{
+          func.apply(this);
+        },delay)
+      }
     }
   },
   created(){
@@ -129,6 +142,20 @@ export default {
     this.getHomeGoodData('new',1);
     this.getHomeGoodData("sell",1);
     this.roundImg();
+    // 这里设置事件总线，将goods-item组件中的事件放到上面，从而在home组件上面
+    // 进行监听
+  },
+  mounted(){
+    // 图片加载环节
+    const refresh = this.debound(this.$refs.scroll.refresh,30);
+    this.$bus.$on("imgloadout",()=>{
+      refresh();
+    })
+    // 设置tab-control的定位
+    console.log(this.$refs.tabcontrol.$el.offsetTop);
+  },
+  destroyed(){
+    console.log('ss');
   }
 }
 </script>
@@ -163,3 +190,10 @@ export default {
   right: 10px;
 }
 </style>
+
+<!--refresh出现错误总结：
+1.当home标签开始创建之后就开始图片数据。
+2.当图片数据加载完成后，开始触发emit向总线发送事件
+3.总线监听到时，就开始查找this.$refs.scroll.refresh()。
+4.如果此时的scroll还没有创建，则就会报错。
+-->

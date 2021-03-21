@@ -23,7 +23,13 @@ export default {
   },
   methods:{
     scrollTo(x,y,time = 300){
-      this.bs.scrollTo(x,y,time);
+      this.bs && this.bs.scrollTo(x,y,time);
+    },
+     refresh(){
+      this.bs && this.bs.refresh();
+    },
+    finishPullUp(){
+      this.bs && this.bs.finishPullUp();
     }
   },
   // 当挂载完之后
@@ -44,8 +50,10 @@ export default {
     this.bs.on("scroll",(position)=>{
       this.$emit("scrollposition",position);
     });
+    // 这里如果是箭头函数，则指向的是vue对象
+    // 如果是普通函数,则指向Better-scropt对象
     this.bs.on("pullingUp",()=>{
-      this.$emit("pullingup");
+      this.$emit("pullingUp");
     })
   }
 }

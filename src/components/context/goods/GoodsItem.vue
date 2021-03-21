@@ -1,7 +1,7 @@
 <template>
   <div class="goods-item">
     <a :href="gooditem.link">
-      <img :src="gooditem.showLarge.img" alt="">
+      <img :src="gooditem.showLarge.img" alt="" @load="imgloadfinsh">
       <div class="text-box">
         <p>{{gooditem.title}}</p>
         <span>{{gooditem.orgPrice}}</span>
@@ -21,6 +21,11 @@ export default {
         return {};
       }
     }
+  },
+  methods:{
+    imgloadfinsh(){
+      this.$bus.$emit("imgloadout");
+    },
   }
 }
 </script>
