@@ -1,6 +1,6 @@
 <template>
-  <div class="goods-item">
-    <a :href="gooditem.link">
+  <div class="goods-item" @click="goodsdetail">
+    <a>
       <img :src="gooditem.showLarge.img" alt="" @load="imgloadfinsh">
       <div class="text-box">
         <p>{{gooditem.title}}</p>
@@ -14,6 +14,11 @@
 <script>
 export default {
   name:'GoodsItem',
+  data(){
+    return {
+      id:this.gooditem.iid,
+    }
+  },
   props:{
     gooditem:{
       type:Object,
@@ -26,6 +31,9 @@ export default {
     imgloadfinsh(){
       this.$bus.$emit("imgloadout");
     },
+    goodsdetail(){
+      this.$router.push('/detail/'+this.gooditem.iid);
+    }
   }
 }
 </script>

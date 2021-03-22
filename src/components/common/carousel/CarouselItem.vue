@@ -1,7 +1,7 @@
 <template>
   <li class="img-item">
     <a :href="imgone.link">
-      <img :src="imgone.image" alt="">
+      <img :src="imgone.image" alt="" @load="carouselimg">
     </a>
   </li>
 </template>
@@ -13,6 +13,11 @@ export default {
     imgone:{
       type:Object,
       default:{},
+    }
+  },
+  methods:{
+    carouselimg(){
+      this.$emit("carouselimgload")
     }
   }
 }

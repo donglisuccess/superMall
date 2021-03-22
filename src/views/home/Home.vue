@@ -3,23 +3,33 @@
     <nav-bar class="nav-back">
       <div slot="center">购物街</div>
     </nav-bar>
+    <tab-control :tabText="['流行','新款','精选']" 
+      class="setPlace zindex" 
+      @togglegood="toggle" 
+      ref="tabcontrol1" v-show="isFixed"></tab-control>
     <scroll-view 
     class="content" 
     ref="scroll" 
-    @scrollposition="scrollposition" @pullingUp="imgload">
-        <carousel-figure :imglist="banner" :pointCount ="imgCount">
-        <carousel-item 
-        v-for="(item,index) in banner" 
-        :key="index" 
-        :imgone="item" 
-        slot="img" 
-        v-show="index == imgCount"></carousel-item>
+    @scrollposition="scrollposition" 
+    @pullingUp="imgload">
+      <carousel-figure 
+        :imglist="banner" 
+        :pointCount ="imgCount">
+          <carousel-item 
+            v-for="(item,index) in banner" 
+            :key="index" 
+            :imgone="item" 
+            slot="img" 
+            v-show="index == imgCount" 
+            @carouselimgload="carouselimgload">
+          </carousel-item>
       </carousel-figure>
       <recommend :recommendInfo="recommend"></recommend>
       <feature-view></feature-view>
       <tab-control :tabText="['流行','新款','精选']" 
-      class="setPlace" 
-      @togglegood="toggle" ref="tabcontrol"></tab-control>
+        class="setPlace" 
+        @togglegood="toggle" 
+        ref="tabcontrol2" :class="{fixed:isFixed}"></tab-control>
       <goods-list :goodlist="goods[currentgoods]"></goods-list>
     </scroll-view>
     <back-top class="back-top" 
@@ -67,15 +77,23 @@ export default {
         sell:{page:0,list:[]},
       },
       currentgoods:'pop',
-      isShowTable:false
+      isShowTable:false,
+      isFixed:false,
+      tabposition:0,
+      saveY:0,
     }
   },
   methods:{
     /**
      * 这里是方法 
     */
+   carouselimgload(){
+    this.tabposition = this.$refs.tabcontrol2.$el.offsetTop
+   },
    scrollposition(position){
      this.isShowTable = (-1*position.y) > 800;
+     
+    this.isFixed = (-1*position.y) > this.tabposition;
    },
    toggle(index){
      switch(index){
@@ -83,6 +101,8 @@ export default {
        case 1 :this.currentgoods = "new"; break;
        case 2 :this.currentgoods = "sell"; break;
      }
+     this.$refs.tabcontrol1.currentIndex = index;
+     this.$refs.tabcontrol2.currentIndex = index;
    },
    backClick(){
     //  console.log("hhhh");
@@ -151,11 +171,17 @@ export default {
     this.$bus.$on("imgloadout",()=>{
       refresh();
     })
-    // 设置tab-control的定位
-    console.log(this.$refs.tabcontrol.$el.offsetTop);
   },
   destroyed(){
     console.log('ss');
+  },
+  activated(){
+    this.$refs.scroll.scrollTo(0,this.saveY,0);
+    this.$refs.scroll.refresh();
+  },
+  deactivated(){
+    this.saveY = this.$refs.scroll.scrollY();
+    console.log(this.saveY);
   }
 }
 </script>
@@ -165,6 +191,8 @@ export default {
   background: var(--color-tint);
   color: white;
   font-weight: 600;
+  z-index: 10;
+  position: relative;
 }
 #home{
   /* margin-top: 44px; */
@@ -172,9 +200,13 @@ export default {
 }
 .setPlace{
   /* position: sticky; */
-  top: 44px;
+  top: 0px;
   background: #fff;
   z-index: 1;
+}
+.zindex{
+  position: relative;
+  z-index: 10;
 }
 .content{
   height: 300px;

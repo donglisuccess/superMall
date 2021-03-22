@@ -30,6 +30,9 @@ export default {
     },
     finishPullUp(){
       this.bs && this.bs.finishPullUp();
+    },
+    scrollY(){
+      return this.bs ? this.bs.y :0;
     }
   },
   // 当挂载完之后
