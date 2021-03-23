@@ -14,6 +14,8 @@
       <detail-images-show 
       :showImagesinfo="shopImages" @imageLoadFinish="imageLoad"></detail-images-show>
       <detail-params-info :itemParams="clothParams"></detail-params-info>
+      <detail-info-comment :commentInfo ="commentList"></detail-info-comment>
+      <recommend-list :recommend="recommend"></recommend-list>
     </scroll-view>
   </div>
 </template>
@@ -26,8 +28,10 @@ import DetailShopInfo from "./childcomponents/DetailShopInfo.vue";
 import ScrollView from "components/common/scroll/ScrollView.vue";
 import DetailImagesShow from "./childcomponents/DetailImagesShow.vue";
 import DetailParamsInfo from "./childcomponents/DetailParamsInfo.vue";
+import DetailInfoComment from "./childcomponents/DetailInfoComment.vue";
+import RecommendList from "./childcomponents/RecommendList.vue";
 // 这里是引入的js文件
-import {detailrequest,detaildata,detailShop,detailImagesshow,detailParams} from "network/detail.js";
+import {detailrequest,detaildata,detailShop,detailImagesshow,detailParams,recommend} from "network/detail.js";
 export default {
   name:"Detail",
   data(){
@@ -39,6 +43,8 @@ export default {
       shopInfo:{},
       shopImages:{},
       clothParams:{},
+      commentList:[],
+      recommend:[],
     }
   },
   components:{
@@ -48,7 +54,9 @@ export default {
     DetailShopInfo,
     ScrollView,
     DetailImagesShow,
-    DetailParamsInfo
+    DetailParamsInfo,
+    DetailInfoComment,
+    RecommendList,
   },
   created(){
     detailrequest(this.id).then(res=>{
@@ -61,7 +69,13 @@ export default {
       this.shopImages = new detailImagesshow(res.data.result.detailInfo)
       // console.log(this.shopImages);
       this.clothParams = new detailParams(res.data.result.itemParams);
-      console.log(this.clothParams);
+      // console.log(this.clothParams);
+      this.commentList = res.data.result.rate.list;
+      // console.log(this.commentList);
+    });
+    recommend().then(res=>{
+      // console.log(res.data.data.list);
+      this.recommend = res.data.data.list;
     })
   },
   methods:{

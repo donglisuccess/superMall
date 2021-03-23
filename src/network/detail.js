@@ -48,3 +48,11 @@ export class detailParams{
     this.rule = itemParams.rule.tables[0];
   }
 }
+
+
+// 导出推荐数据
+export function recommend(){
+  return request2({
+    url:'/recommend'
+  });
+}

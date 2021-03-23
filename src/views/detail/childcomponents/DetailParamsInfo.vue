@@ -45,6 +45,7 @@ export default {
 <style scoped>
 .Params-all{
   padding: 0px 10px 0px 10px;
+  background: white;
 }
 .closeParams p{
   display: flex;
