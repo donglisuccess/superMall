@@ -50,6 +50,8 @@ import Recommend from "./childComponents/Recommend.vue";
 import FeatureView from "./childComponents/FeatureView.vue";
 
 import {getHomeMultidata,getHomeGoodData} from "network/home.js";
+import {imageLoad} from "common/mixin.js";
+
 export default {
   name:"Profile",
   components:{
@@ -63,6 +65,7 @@ export default {
     ScrollView,
     BackTop,
   },
+  mixins:[imageLoad],
   data(){
     return {
       banner:null,
@@ -144,16 +147,6 @@ export default {
       // console.log(this.$refs);  这里不能写在这里，因为当刚加载的时候就执行
       // this.$refs为{}
     },
-    // 防抖动函数
-    debound(func,delay){
-      let timer = null;
-      return function(){
-        if(timer) clearTimeout(timer);
-        timer = setTimeout(()=>{
-          func.apply(this);
-        },delay)
-      }
-    }
   },
   created(){
     this.getHomeMultidata();
@@ -166,11 +159,6 @@ export default {
     // 进行监听
   },
   mounted(){
-    // 图片加载环节
-    const refresh = this.debound(this.$refs.scroll.refresh,30);
-    this.$bus.$on("imgloadout",()=>{
-      refresh();
-    })
   },
   destroyed(){
     console.log('ss');
@@ -181,7 +169,10 @@ export default {
   },
   deactivated(){
     this.saveY = this.$refs.scroll.scrollY();
-    console.log(this.saveY);
+    // console.log(this.saveY);
+    // 当离开的时候取消总线上的事件监听
+
+    this.$bus.$off("imgloadout",this.refresh)
   }
 }
 </script>

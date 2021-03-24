@@ -34,6 +34,7 @@ export default {
     },
     detailBarClick(index){
       this.currentIndex = index;
+      this.$emit("detailclick",index);
     }
   },
 }
