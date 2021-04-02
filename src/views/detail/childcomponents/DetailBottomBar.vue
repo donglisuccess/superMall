@@ -15,7 +15,7 @@
       </div>
     </div>  
     <div class="right-box">
-      <div>
+      <div @click="addCart">
         加入购物车
       </div>
       <div>
@@ -28,6 +28,12 @@
 <script>
 export default {
   name:"DetailBottomBar",
+  methods:{
+    addCart(){
+      this.$emit("addcart");
+      
+    }
+  }
 }
 </script>
 

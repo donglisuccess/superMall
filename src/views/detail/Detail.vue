@@ -1,5 +1,8 @@
 <template>
   <div class="detail-all">
+      <!-- <div>
+        {{$store.state.cartlist}}
+      </div> -->
       <!-- 这里是导航栏部分 -->
       <datail-bar class="datail-bar" @detailclick="detailclick" ref="detailbar">
       </datail-bar>
@@ -17,7 +20,11 @@
       <detail-info-comment :commentInfo ="commentList" ref="comment"></detail-info-comment>
       <recommend-list :recommend="recommend" ref="recommend"></recommend-list>
     </scroll-view>
-    <detail-bottom-bar></detail-bottom-bar>
+    <back-top class="back-top" 
+    @click.native="backClick()" :probe-type="3" 
+    v-show="isShowTable"></back-top>
+    <detail-bottom-bar @addcart = "addcart"></detail-bottom-bar>
+    <toast :message="thismessage" :isShow="isShow"></toast>
   </div>
 </template>
 
@@ -33,9 +40,11 @@ import DetailInfoComment from "./childcomponents/DetailInfoComment.vue";
 import RecommendList from "./childcomponents/RecommendList.vue";
 import DetailBottomBar from "./childcomponents/DetailBottomBar.vue";
 // 这里是引入的js文件
-import {detailrequest,detaildata,detailShop,detailImagesshow,detailParams,recommend} from "network/detail.js";
-import {imageLoad} from "common/mixin.js";
-import debound from "common/debound.js";
+import {detailrequest,detaildata,detailShop,detailImagesshow,detailParams,recommend,cartData} from "network/detail.js";
+import {imageLoad,backTop} from "common/mixin.js";
+
+// Toast组件
+import Toast from "components/common/toast/Toast.vue";
 export default {
   name:"Detail",
   data(){
@@ -52,6 +61,10 @@ export default {
       gotoItem:[],
       imgload:null,
       currentIndex:0,
+      cartdata:{},
+      Toast,
+      isShow:false,
+      thismessage:"",
     }
   },
   components:{
@@ -64,26 +77,22 @@ export default {
     DetailParamsInfo,
     DetailInfoComment,
     RecommendList,
-    DetailBottomBar
+    DetailBottomBar,
+    Toast,
   },
-  mixins:[imageLoad],
+  mixins:[imageLoad,backTop],
   created(){
     detailrequest(this.id).then(res=>{
       // console.log(res);
-      // console.log(res.data.result.itemInfo.topImages);
       this.topImage = res.data.result.itemInfo.topImages;
       this.goods = new detaildata(res.data.result.itemInfo,res.data.result);
       this.shopInfo = new detailShop(res.data.result.shopInfo);
-      // console.log(this.shopInfo);
       this.shopImages = new detailImagesshow(res.data.result.detailInfo)
-      // console.log(this.shopImages);
       this.clothParams = new detailParams(res.data.result.itemParams);
-      // console.log(this.clothParams);
       this.commentList = res.data.result.rate.list;
-      // console.log(this.commentList);
+      this.cartdata = new cartData(res.data.result.itemInfo);
     });
     recommend().then(res=>{
-      // console.log(res.data.data.list);
       this.recommend = res.data.data.list;
     });
   },
@@ -126,6 +135,20 @@ export default {
           this.$refs.detailbar.currentIndex = this.currentIndex;
         }
       }
+      this.isShowTable = position > 1000;
+    },
+    backClick(){
+      this.$refs.scroll.scrollTo(0,0,500);
+    },
+    addcart(){  //设置加入购物车方法
+    this.isShow = true;
+    var me = this;
+      this.$store.dispatch("addcart",this.cartdata).then(value=>{
+        me.thismessage = value
+        setTimeout(()=>{
+          me.isShow= false;
+        },2000);
+      })
     }
   },
   updated(){
@@ -153,5 +176,10 @@ export default {
   left: 0px;
   right: 0px;
   bottom: 59px;
+}
+.back-top{
+  position: fixed;
+  bottom: 60px;
+  right: 10px;
 }
 </style>

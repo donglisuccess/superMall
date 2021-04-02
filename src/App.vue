@@ -9,6 +9,7 @@
 
 <script>
 import MainTabBar from "components/context/TabBar/MainTabBar.vue"
+import store from "./store/index.js";
 import router from "./router/index.js";
 export default {
   name: 'App',
@@ -16,6 +17,7 @@ export default {
     MainTabBar,
   },
   router,
+  store
 }
 </script>
 

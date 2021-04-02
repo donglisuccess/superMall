@@ -56,3 +56,15 @@ export function recommend(){
     url:'/recommend'
   });
 }
+
+
+export class cartData{
+  constructor(info){
+    this.iid = info.iid;
+    this.desc = info.desc;
+    this.title = info.title;
+    this.price = info.lowNowPrice;
+    this.image = info.topImages[0];
+    this.count = 0;
+  }
+}

@@ -1,4 +1,5 @@
 import debound from "./debound.js";
+import BackTop from "components/common/backtop/BackTop.vue";
 export const imageLoad ={
   data(){
     return {
@@ -12,4 +13,17 @@ export const imageLoad ={
         this.refresh();
       })
   }
+}
+
+// 这里是抽离混入
+export const backTop = {
+  data(){
+    return {
+      isShowTable:false,
+    }
+  },
+  components:{
+    BackTop
+  },
+
 }

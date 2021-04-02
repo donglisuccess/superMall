@@ -44,13 +44,12 @@ import {CarouselFigure,CarouselItem} from "components/common/carousel/carousel.j
 import TabControl from "components/context/tabcontrol/TabControl.vue";
 import GoodsList from "components/context/goods/GoodsList.vue";
 import ScrollView from "components/common/scroll/ScrollView.vue";
-import BackTop from "components/common/backtop/BackTop.vue";
 
 import Recommend from "./childComponents/Recommend.vue";
 import FeatureView from "./childComponents/FeatureView.vue";
 
 import {getHomeMultidata,getHomeGoodData} from "network/home.js";
-import {imageLoad} from "common/mixin.js";
+import {imageLoad,backTop} from "common/mixin.js";
 
 export default {
   name:"Profile",
@@ -63,9 +62,8 @@ export default {
     TabControl,
     GoodsList,
     ScrollView,
-    BackTop,
   },
-  mixins:[imageLoad],
+  mixins:[imageLoad,backTop],
   data(){
     return {
       banner:null,
@@ -80,7 +78,6 @@ export default {
         sell:{page:0,list:[]},
       },
       currentgoods:'pop',
-      isShowTable:false,
       isFixed:false,
       tabposition:0,
       saveY:0,
